@@ -1,0 +1,61 @@
+Books Table Creation Query:
+
+CREATE TABLE books (
+    book_id INT PRIMARY KEY,
+    title VARCHAR(255),
+    isbn VARCHAR(20),
+    genre VARCHAR(100),
+    price DECIMAL(10,2),
+    author_id INT,
+    FOREIGN KEY (author_id) REFERENCES authors(author_id)
+);
+
+
+Authors Table Creation Query:
+
+CREATE TABLE authors (
+    author_id INT PRIMARY KEY,
+    author_name VARCHAR(255)
+);
+
+Customers Table Creation Query:
+
+CREATE TABLE customers (
+    customer_id INT PRIMARY KEY,
+    name VARCHAR(255),
+    email VARCHAR(255),
+    address VARCHAR(255)
+);
+
+Orders Table Creation Query:
+
+CREATE TABLE orders (
+    order_id INT PRIMARY KEY,
+    customer_id INT,
+    order_date DATE,
+    total_price DECIMAL(10,2),
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+);
+
+
+Order_Details Table Creation Query:
+
+CREATE TABLE order_details (
+    order_id INT,
+    book_id INT,
+    quantity INT,
+    unit_price DECIMAL(10,2),
+    PRIMARY KEY (order_id, book_id),
+    FOREIGN KEY (order_id) REFERENCES orders(order_id),
+    FOREIGN KEY (book_id) REFERENCES books(book_id)
+);
+
+Query 
+
+SELECT b.title AS book_title, SUM(od.quantity) AS total_sold, SUM(od.quantity * od.unit_price) AS total_revenue
+FROM order_details od
+JOIN books b ON od.book_id = b.book_id
+JOIN orders o ON od.order_id = o.order_id
+WHERE o.order_date BETWEEN 'start_date' AND 'end_date'
+GROUP BY b.title
+ORDER BY total_sold DESC;
